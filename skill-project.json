@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "name": "awesome-skill-maker",
+  "version": "0.1.0",
+  "repository": "kwgjjeffrey/awesome-skill-maker",
+  "artifactPaths": [
+    "SKILL.md",
+    "skill-project.json",
+    "LICENSE",
+    "project",
+    "setup",
+    "release",
+    "runtime",
+    "utils"
+  ]
+}
