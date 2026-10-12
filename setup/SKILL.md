@@ -17,3 +17,5 @@ upgrade 从公开 GitHub latest Release 下载 manifest 与归档，并对照 ta
 首次安装：从 GitHub Release 下载归档及 manifest 后，执行 `python3 setup/bootstrap_skill_installation.py --archive ... --manifest ... --target ... --store ...`。该 bootstrap 从源码分发地址单独获得，先验证归档再运行包内安装器；见仓库 README 的具体 URL。安装完成后由 Agent 原生 loader 发现稳定链接，必要时重启 Agent。
 
 用户要安装提示词或分享本 Skill 时，读取 [install-skill-prompt.md](install-skill-prompt.md)，提供可直接复制的提示词。它指向 latest Release，并在首次安装时固定一个 tag 后校验所有制品；不要给开发 checkout 的安装路径。bootstrap 也作为 Release asset 分发，由 manifest 记录大小与 SHA-256。
+
+兼容说明：0.1.0 的安装器要求内部模块有 frontmatter，无法直接接受新版单入口结构。升级旧安装时使用分享提示词中的已校验 latest bootstrap，沿用原 target/store；新版安装器能管理单入口制品。

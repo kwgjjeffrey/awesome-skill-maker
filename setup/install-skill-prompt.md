@@ -8,9 +8,9 @@ https://github.com/kwgjjeffrey/awesome-skill-maker/releases/latest
 
 先只读检查 Python 3.9+、curl、操作系统及目标 Agent 的 skills 目录。Codex 默认目标为 ~/.codex/skills/awesome-skill-maker，外部版本与状态 store 为 ~/.local/share/awesome-skill-maker。其他宿主按实际配置选择 skills 目录，不能猜测或覆盖未知文件。前置条件缺失时报告具体缺项。
 
-若目标已经是该产品的 managed 安装，执行其 setup/scripts/manage_skill_installation.py upgrade --repository kwgjjeffrey/awesome-skill-maker --target <目标目录> --store <原安装 store>，再执行 check --target <目标目录>。不要替换开发 checkout 或普通未托管目录。
+若目标已安装，先从目标链接和 store/receipt.json 只读确认它是同一产品的 managed 安装，并沿用原安装 store；不要替换开发 checkout 或普通未托管目录。安装和升级都使用下面从 latest 下载并校验的 bootstrap，避免旧安装器不支持新制品格式。
 
-首次安装：请求 https://api.github.com/repos/kwgjjeffrey/awesome-skill-maker/releases/latest，记录一次返回的 tag_name，并固定到该 tag 下载，避免后续 latest 发生变化。只接受 vX.Y.Z 格式、公开的非 draft/非 prerelease Release。下载该 Release 的 awesome-skill-maker-release.json、awesome-skill-maker-X.Y.Z.tgz 和 bootstrap_skill_installation.py 三个 assets 到临时目录；所有资源必须属于同一仓库的同一 tag。无需 GitHub 登录。
+请求 https://api.github.com/repos/kwgjjeffrey/awesome-skill-maker/releases/latest，记录一次返回的 tag_name，并固定到该 tag 下载，避免后续 latest 发生变化。只接受 vX.Y.Z 格式、公开的非 draft/非 prerelease Release。下载该 Release 的 awesome-skill-maker-release.json、awesome-skill-maker-X.Y.Z.tgz 和 bootstrap_skill_installation.py 三个 assets 到临时目录；所有资源必须属于同一仓库的同一 tag。无需 GitHub 登录。
 
 核对 manifest 的 repository/name/version 与该 Release，核对 tag 对应的 commit 与 manifest.sourceCommit（annotated tag 需解引用）；对归档和 bootstrap 分别验证 manifest 声明的 size 与 SHA-256。任何不一致都停止，不能执行未校验的 bootstrap。
 
