@@ -60,3 +60,7 @@ GUI 展示模块能力、真实输入输出及当前项目状态，调用与 Ski
 ## 8. local runtime 的技术约束
 
 用户机器会同时运行很多 Skill runtime，常驻本地服务使用 Rust，控制空闲内存、线程和进程数量。开发脚本可按需启动；不要为 GUI 常驻额外的 Python 或 Node 服务。发布制品包含对应平台的 runtime 二进制，setup 负责生命周期。性能结论必须附测量范围与数据。
+
+## 单一发现入口（2026-10-12 用户澄清）
+
+一个大型 Skill 只有根 SKILL.md 使用 name/description YAML 元信息。内部模块仍叫 SKILL.md，但使用普通 Markdown，由根入口按需读取，不注册成多个独立 Skill。setup 内随制品分发可复制的安装提示词，面向 GitHub latest Release，并在开始安装时固定一次 release tag，避免下载期间混用版本。

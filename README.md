@@ -6,18 +6,9 @@
 
 ## 安装制品
 
-从 `kwgjjeffrey/awesome-skill-maker` 的 GitHub Releases 获取 `awesome-skill-maker-0.1.0.tgz` 和 `awesome-skill-maker-release.json`，再获取同一 tag 的 bootstrap：
+使用 [latest Release](https://github.com/kwgjjeffrey/awesome-skill-maker/releases/latest) 的制品安装。可直接分享给 Agent 的完整安装提示词在 [setup/install-skill-prompt.md](setup/install-skill-prompt.md)，随制品分发。提示词会固定一次 tag，校验归档与 bootstrap 的 size/SHA-256 及 tag/sourceCommit 后安装，无需 clone 或 GitHub 登录。
 
-```sh
-curl -fL https://raw.githubusercontent.com/kwgjjeffrey/awesome-skill-maker/v0.1.0/setup/bootstrap_skill_installation.py -o bootstrap_skill_installation.py
-python3 bootstrap_skill_installation.py \
-  --archive awesome-skill-maker-0.1.0.tgz \
-  --manifest awesome-skill-maker-release.json \
-  --target "$HOME/.codex/skills/awesome-skill-maker" \
-  --store "$HOME/.local/share/awesome-skill-maker"
-```
-
-bootstrap 验证 manifest 大小、SHA-256 和归档路径/类型后调用包内安装器。离线安装的 manifest 必须来自可信 Release；远端 upgrade 额外核对 tag/sourceCommit。当前不提供独立签名验证。稳定链接和不可变版本目录分离；其他 Agent 可指定自己的 skills 目录，当前没有自动写宿主配置。
+只有根 SKILL.md 是可发现入口；内部模块 SKILL.md 是按需读取的普通说明。
 
 安装完成后调用 `$awesome-skill-maker`。新建示例：
 

@@ -1,7 +1,3 @@
----
-name: awesome-skill-maker-runtime
-description: 设计大型 Skill 的本地 runtime、GUI 和共享业务实现边界。
----
 # Runtime 边界
 
 先判断能力是否需要常驻服务；本 Skill 只有按需 Python 工具，无 daemon。需要常驻服务的目标项目采用 Rust，目录命名 `local-runtime/`。它是实现目录，不为了目录存在而添加 SKILL.md。发布对应平台/架构二进制，setup 统一拥有安装、检查、启停、升级和发现端口的实现。

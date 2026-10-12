@@ -85,8 +85,10 @@ def validate(repo, installed=False):
         for file in files:
             if file.name == 'SKILL.md':
                 text = (repo / file).read_text()
-                if not re.search(r'^description:\s*\S', text, re.M):
+                if file == Path('SKILL.md') and not re.search(r'^description:\s*\S', text, re.M):
                     errors.append('Missing description: ' + str(file))
+                if file != Path('SKILL.md') and text.startswith('---\n'):
+                    errors.append('Internal module must not register an independent Skill: ' + str(file))
                 if '/Users/' in text or '/home/' in text:
                     errors.append('Author-machine path in consumer instructions: ' + str(file))
                 for link in re.findall(r'\]\(([^)]+)\)', text):
@@ -138,6 +140,9 @@ def build(repo):
             with (repo / relative).open('rb') as stream:
                 bundle.addfile(info, stream)
     manifest = {'schemaVersion': 1, 'name': data['name'], 'version': data['version'], 'repository': data['repository'], 'sourceCommit': commit, 'asset': archive.name, 'size': archive.stat().st_size, 'sha256': hashlib.sha256(archive.read_bytes()).hexdigest()}
+    bootstrap = repo / 'setup/bootstrap_skill_installation.py'
+    shutil.copy2(bootstrap, dist / bootstrap.name)
+    manifest['bootstrap'] = {'asset': bootstrap.name, 'size': bootstrap.stat().st_size, 'sha256': hashlib.sha256(bootstrap.read_bytes()).hexdigest()}
     write_json(dist / f"{data['name']}-release.json", manifest)
     return manifest
 
@@ -354,9 +359,9 @@ def initialize(destination, name, repository, description):
         (stage / 'README.md').write_text('# ' + name + '\n\n源码使用 GitHub ' + repository + '；消费使用对应 Release 制品。当前骨架只实现 setup/release，业务模块待开发。\n\n构建：`python3 release/scripts/build_skill_artifact.py --repo .`（先提交干净 Git HEAD）。\n\n安装：从同一 Release 取得 tgz 与 manifest，执行 `python3 setup/bootstrap_skill_installation.py --archive <archive> --manifest <manifest> --target <agent-skills>/' + name + ' --store <external-store>`。bootstrap 必须来自可信 tag。\n\n验证：`python3 -m unittest discover -s tests`。\n')
         (stage / 'AGENTS.md').write_text('# Development\n\nRead docs/skill-authoring.md. Keep consumer SKILL.md and development AGENTS.md separate. Add actual business modules and verification before advertising capabilities. Installed tools must never import this checkout. Source and releases use GitHub. For ongoing Skill engineering, use the independently installed Awesome Skill Maker release artifact and read its SKILL.md; never import its development checkout. Acquire verified artifacts from https://github.com/kwgjjeffrey/awesome-skill-maker/releases when unavailable.\n')
         for module in ['setup', 'release']:
-            module_skill = stage / module / 'SKILL.md'
-            module_skill.write_text(module_skill.read_text().replace('name: awesome-skill-maker-', 'name: ' + name + '-'))
             (stage / module / 'AGENTS.md').write_text('# Module development\n\nFollow root AGENTS.md. Lifecycle logic is shared through utils. Verify staged artifacts and preserve external state.\n')
+        prompt = stage / 'setup/install-skill-prompt.md'
+        prompt.write_text(prompt.read_text().replace('kwgjjeffrey/awesome-skill-maker', repository).replace('awesome-skill-maker', name))
         (stage / 'docs').mkdir()
         # Authoring conventions are embedded in the artifact so scaffolding is checkout-independent.
         shutil.copy2(TOOL_ROOT / 'project' / 'skill-authoring.md', stage / 'docs' / 'skill-authoring.md')
@@ -388,12 +393,14 @@ def publish(repo):
     if existing.returncode == 0:
         raise ValueError('Release already exists; never overwrite a version')
     dist = repo / 'dist'
-    subprocess.run(['gh', 'release', 'create', tag, '--repo', data['repository'], '--target', m['sourceCommit'], '--draft', '--title', tag, '--notes', 'Modular Skill artifact; manifest binds source commit, size and SHA-256.', str(dist / m['asset']), str(dist / (m['name'] + '-release.json'))], check=True)
+    subprocess.run(['gh', 'release', 'create', tag, '--repo', data['repository'], '--target', m['sourceCommit'], '--draft', '--title', tag, '--notes', 'Modular Skill artifact; manifest binds source commit, size and SHA-256.', str(dist / m['asset']), str(dist / (m['name'] + '-release.json')), str(dist / m['bootstrap']['asset'])], check=True)
     with tempfile.TemporaryDirectory(prefix='skill-release-readback-') as tmp:
         subprocess.run(['gh', 'release', 'download', tag, '--repo', data['repository'], '--dir', tmp], check=True)
         if read_json(Path(tmp) / (m['name'] + '-release.json')) != m:
             raise ValueError('Published manifest differs; draft retained')
         verify_archive(Path(tmp) / m['asset'], Path(tmp) / (m['name'] + '-release.json'))
+        if (Path(tmp) / m['bootstrap']['asset']).read_bytes() != (dist / m['bootstrap']['asset']).read_bytes():
+            raise ValueError('Published bootstrap differs; draft retained')
     subprocess.run(['gh', 'release', 'edit', tag, '--repo', data['repository'], '--draft=false'], check=True)
     return {'published': 'https://github.com/' + data['repository'] + '/releases/tag/' + tag}
 

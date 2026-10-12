@@ -1,7 +1,3 @@
----
-name: awesome-skill-maker-project
-description: 从已安装的 Awesome Skill Maker 创建并校验模块化 Skill 项目。
----
 # 项目组织
 
 先确定能力归属与实际需要的工具，避免按技术类型堆放所有业务模块。

@@ -1,7 +1,3 @@
----
-name: awesome-skill-maker-setup
-description: 校验前置条件并管理 Skill 制品安装、GitHub 升级与回退。
----
 # Setup
 
 macOS/Linux，Python 3.9+、curl；开发或发布还需要 Git/gh。无第三方依赖，不准备常驻服务。
@@ -19,3 +15,5 @@ check 只读、输出前置条件及安装 receipt。install 校验 manifest 的
 upgrade 从公开 GitHub latest Release 下载 manifest 与归档，并对照 tag 的 commit 验证 sourceCommit；每次只接受更高版本。GitHub 是当前信任来源，SHA-256 提供完整性而非独立签名。高信任场景另行配置可信签名密钥，不能声称当前实现有签名验证。
 
 首次安装：从 GitHub Release 下载归档及 manifest 后，执行 `python3 setup/bootstrap_skill_installation.py --archive ... --manifest ... --target ... --store ...`。该 bootstrap 从源码分发地址单独获得，先验证归档再运行包内安装器；见仓库 README 的具体 URL。安装完成后由 Agent 原生 loader 发现稳定链接，必要时重启 Agent。
+
+用户要安装提示词或分享本 Skill 时，读取 [install-skill-prompt.md](install-skill-prompt.md)，提供可直接复制的提示词。它指向 latest Release，并在首次安装时固定一个 tag 后校验所有制品；不要给开发 checkout 的安装路径。bootstrap 也作为 Release asset 分发，由 manifest 记录大小与 SHA-256。

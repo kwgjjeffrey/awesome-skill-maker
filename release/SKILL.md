@@ -1,7 +1,3 @@
----
-name: awesome-skill-maker-release
-description: 构建可追溯 Skill 制品并通过 GitHub Release 分发。
----
 # GitHub 分发
 
 在目标源码仓库执行其 release 工具，或使用本制品的通用构建器：
